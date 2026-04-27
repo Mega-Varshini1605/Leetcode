@@ -1,0 +1,29 @@
+function combinationSum(candidates: number[], target: number): number[][] {
+    const result: number[][] = [];
+    
+    // Sort to potentially optimize (though not strictly necessary)
+    candidates.sort((a, b) => a - b);
+
+    const backtrack = (start: number, remaining: number, path: number[]) => {
+        if (remaining === 0) {
+            result.push([...path]); // Found a solution
+            return;
+        }
+
+        for (let i = start; i < candidates.length; i++) {
+            // Optimization: if the current number is > remaining, 
+            // no need to check further because candidates are sorted
+            if (candidates[i] > remaining) break;
+
+            path.push(candidates[i]); // Choose
+            
+            // Explore: index stays 'i' because we can reuse the same number
+            backtrack(i, remaining - candidates[i], path);
+            
+            path.pop(); // Backtrack
+        }
+    };
+
+    backtrack(0, target, []);
+    return result;
+}
