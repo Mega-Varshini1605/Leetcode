@@ -1,0 +1,32 @@
+function combinationSum2(candidates: number[], target: number): number[][] {
+    const result: number[][] = [];
+    
+    // Sort panrathu moolama duplicates-ah easy-ah handle pannalam
+    candidates.sort((a, b) => a - b);
+
+    const backtrack = (start: number, remaining: number, path: number[]) => {
+        if (remaining === 0) {
+            result.push([...path]);
+            return;
+        }
+
+        for (let i = start; i < candidates.length; i++) {
+            // Optimization: current number target-ah vida perusu na inime check panna venam
+            if (candidates[i] > remaining) break;
+
+            // Duplicate skip logic: 
+            // 'i > start' and same number na, adha skip panniduvom
+            if (i > start && candidates[i] === candidates[i - 1]) continue;
+
+            path.push(candidates[i]); // Choose
+            
+            // Explore: index-ah 'i + 1' nu mathanum (since reuse kidayathu)
+            backtrack(i + 1, remaining - candidates[i], path);
+            
+            path.pop(); // Backtrack
+        }
+    };
+
+    backtrack(0, target, []);
+    return result;
+}
