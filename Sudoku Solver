@@ -1,0 +1,45 @@
+/**
+ Do not return anything, modify board in-place instead.
+ */
+function solveSudoku(board: string[][]): void {
+    backtrack(board);
+}
+
+function backtrack(board: string[][]): boolean {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            // Empty cell kandupidi
+            if (board[row][col] === '.') {
+                for (let num = 1; num <= 9; num++) {
+                    const char = num.toString();
+                    
+                    if (isValid(board, row, col, char)) {
+                        board[row][col] = char; // Number-ah apply pannu
+
+                        if (backtrack(board)) return true; // Next step solve aagiducha?
+
+                        board[row][col] = '.'; // Illana, thappa pochu, reset pannu (Backtrack)
+                    }
+                }
+                return false; // 1 to 9 ethume set aagalana intha path wrong
+            }
+        }
+    }
+    return true; // Ella cell-um fill aagiduchu
+}
+
+function isValid(board: string[][], row: number, col: number, char: string): boolean {
+    for (let i = 0; i < 9; i++) {
+        // Row check
+        if (board[row][i] === char) return false;
+        
+        // Column check
+        if (board[i][col] === char) return false;
+        
+        // 3x3 Box check
+        const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+        const boxCol = 3 * Math.floor(col / 3) + (i % 3);
+        if (board[boxRow][boxCol] === char) return false;
+    }
+    return true;
+}
