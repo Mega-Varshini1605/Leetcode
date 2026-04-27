@@ -1,0 +1,28 @@
+class Solution {
+    public int maxArea(int[] height) {
+        int maxWater = 0;
+        int left = 0;
+        int right = height.length - 1;
+
+        while (left < right) {
+            // Calculate width
+            int width = right - left;
+            
+            // Area is limited by the shorter vertical line
+            int currentHeight = Math.min(height[left], height[right]);
+            int currentArea = currentHeight * width;
+            
+            // Update max area
+            maxWater = Math.max(maxWater, currentArea);
+
+            // Move the pointer pointing to the shorter line
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return maxWater;
+    }
+}
