@@ -1,0 +1,36 @@
+class Solution {
+    public boolean isMatch(String s, String p) {
+        int sIdx = 0, pIdx = 0, matchIdx = 0, starIdx = -1;            
+        
+        while (sIdx < s.length()) {
+            // Case 1: Characters match or pattern has '?'
+            if (pIdx < p.length() && (p.charAt(pIdx) == '?' || s.charAt(sIdx) == p.charAt(pIdx))) {
+                sIdx++;
+                pIdx++;
+            } 
+            // Case 2: Pattern has '*'
+            else if (pIdx < p.length() && p.charAt(pIdx) == '*') {
+                starIdx = pIdx;
+                matchIdx = sIdx;
+                pIdx++;
+            } 
+            // Case 3: Last pattern char was '*', backtrack and match more of s
+            else if (starIdx != -1) {
+                pIdx = starIdx + 1;
+                matchIdx++;
+                sIdx = matchIdx;
+            } 
+            // Case 4: No match and no '*' available
+            else {
+                return false;
+            }
+        }
+        
+        // Check for remaining '*' in pattern
+        while (pIdx < p.length() && p.charAt(pIdx) == '*') {
+            pIdx++;
+        }
+        
+        return pIdx == p.length();
+    }
+}
