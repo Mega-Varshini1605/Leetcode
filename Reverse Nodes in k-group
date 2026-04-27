@@ -1,0 +1,42 @@
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || k == 1) return head;
+        
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode prevGroupTail = dummy;
+        
+        while (true) {
+            // Check if there are k nodes left
+            ListNode kth = getKth(prevGroupTail, k);
+            if (kth == null) break;
+            
+            ListNode nextGroupHead = kth.next;
+            
+            // Reverse the group
+            ListNode prev = nextGroupHead;
+            ListNode curr = prevGroupTail.next;
+            while (curr != nextGroupHead) {
+                ListNode tmp = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = tmp;
+            }
+            
+            // Connect with previous and move pointers
+            ListNode temp = prevGroupTail.next;
+            prevGroupTail.next = kth;
+            prevGroupTail = temp;
+        }
+        
+        return dummy.next;
+    }
+    
+    private ListNode getKth(ListNode curr, int k) {
+        while (curr != null && k > 0) {
+            curr = curr.next;
+            k--;
+        }
+        return curr;
+    }
+}
