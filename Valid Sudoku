@@ -1,0 +1,26 @@
+function isValidSudoku(board: string[][]): boolean {
+    const seen = new Set<string>();
+
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            const val = board[r][c];
+            
+            if (val !== '.') {
+                // Unique identifiers for row, column, and 3x3 box
+                const rowStr = `${val} in row ${r}`;
+                const colStr = `${val} in col ${c}`;
+                const boxStr = `${val} in box ${Math.floor(r / 3)}-${Math.floor(c / 3)}`;
+
+                if (seen.has(rowStr) || seen.has(colStr) || seen.has(boxStr)) {
+                    return false;
+                }
+
+                seen.add(rowStr);
+                seen.add(colStr);
+                seen.add(boxStr);
+            }
+        }
+    }
+
+    return true;
+}
