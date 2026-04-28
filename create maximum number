@@ -1,0 +1,58 @@
+class Solution {
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int m = nums1.length;
+        int n = nums2.length;
+        int[] maxResult = new int[k];
+
+        // i is the number of elements taken from nums1
+        for (int i = Math.max(0, k - n); i <= Math.min(k, m); i++) {
+            int[] seq1 = maxSubsequence(nums1, i);
+            int[] seq2 = maxSubsequence(nums2, k - i);
+            int[] merged = merge(seq1, seq2, k);
+            
+            if (isGreater(merged, 0, maxResult, 0)) {
+                maxResult = merged;
+            }
+        }
+        return maxResult;
+    }
+
+    // Helper: Find max subsequence of length len using a monotonic stack
+    private int[] maxSubsequence(int[] nums, int len) {
+        int[] stack = new int[len];
+        int top = -1;
+        int toRemove = nums.length - len;
+        
+        for (int i = 0; i < nums.length; i++) {
+            while (top >= 0 && stack[top] < nums[i] && toRemove > 0) {
+                top--;
+                toRemove--;
+            }
+            if (top < len - 1) {
+                stack[++top] = nums[i];
+            } else {
+                toRemove--;
+            }
+        }
+        return stack;
+    }
+
+    // Helper: Merge two subsequences to form the largest number
+    private int[] merge(int[] s1, int[] s2, int k) {
+        int[] result = new int[k];
+        int i = 0, j = 0;
+        for (int r = 0; r < k; r++) {
+            result[r] = isGreater(s1, i, s2, j) ? s1[i++] : s2[j++];
+        }
+        return result;
+    }
+
+    // Helper: Compare two arrays starting from specific indices
+    private boolean isGreater(int[] s1, int i, int[] s2, int j) {
+        while (i < s1.length && j < s2.length && s1[i] == s2[j]) {
+            i++;
+            j++;
+        }
+        return j == s2.length || (i < s1.length && s1[i] > s2[j]);
+    }
+}
