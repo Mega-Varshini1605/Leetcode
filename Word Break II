@@ -1,0 +1,43 @@
+import java.util.*;
+
+class Solution {
+    // Memoization map: substring -> list of possible sentences
+    Map<String, List<String>> memo = new HashMap<>();
+
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        Set<String> wordSet = new HashSet<>(wordDict);
+        return dfs(s, wordSet);
+    }
+
+    private List<String> dfs(String s, Set<String> wordSet) {
+        // Return cached result if available
+        if (memo.containsKey(s)) {
+            return memo.get(s);
+        }
+
+        List<String> res = new ArrayList<>();
+        
+        // Base case: empty string
+        if (s.isEmpty()) {
+            res.add("");
+            return res;
+        }
+
+        // Try every possible prefix
+        for (int i = 1; i <= s.length(); i++) {
+            String prefix = s.substring(0, i);
+            
+            if (wordSet.contains(prefix)) {
+                String suffix = s.substring(i);
+                List<String> subList = dfs(suffix, wordSet);
+                
+                for (String sub : subList) {
+                    res.add(prefix + (sub.isEmpty() ? "" : " ") + sub);
+                }
+            }
+        }
+
+        memo.put(s, res);
+        return res;
+    }
+}
