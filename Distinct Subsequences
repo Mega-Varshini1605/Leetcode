@@ -1,0 +1,32 @@
+class Solution {
+    public int numDistinct(String s, String t) {
+        int m = s.length();
+        int n = t.length();
+        
+        // dp[i][j] stores the number of subsequences of s.substring(0, i) 
+        // that match t.substring(0, j)
+        int[][] dp = new int[m + 1][n + 1];
+        
+        // Base case: If t is empty, there is exactly 1 subsequence (the empty string)
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = 1;
+        }
+        
+        // Fill the DP table
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                // If characters match, we have two choices:
+                // 1. Use s.charAt(i-1) to match t.charAt(j-1) -> dp[i-1][j-1]
+                // 2. Ignore s.charAt(i-1) and see if s.substring(0, i-1) matches -> dp[i-1][j]
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    // If they don't match, we must ignore s.charAt(i-1)
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        
+        return dp[m][n];
+    }
+}
