@@ -1,0 +1,26 @@
+class Solution {
+    int maxPath = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        gainFromSubtree(root);
+        return maxPath;
+    }
+
+    private int gainFromSubtree(TreeNode node) {
+        if (node == null) return 0;
+
+        // Recursively get the max gain from subtrees. 
+        // Use Math.max(..., 0) to ignore negative paths.
+        int leftGain = Math.max(gainFromSubtree(node.left), 0);
+        int rightGain = Math.max(gainFromSubtree(node.right), 0);
+
+        // Price of a new path with the current node as the highest point (peak)
+        int currentPathSum = node.val + leftGain + rightGain;
+
+        // Update the global maximum
+        maxPath = Math.max(maxPath, currentPathSum);
+
+        // Return the max "single-arm" gain to the parent
+        return node.val + Math.max(leftGain, rightGain);
+    }
+}
