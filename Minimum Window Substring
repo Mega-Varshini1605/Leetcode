@@ -1,0 +1,55 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) return "";
+
+        // Map to store required frequency of characters in t
+        Map<Character, Integer> targetMap = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            targetMap.put(c, targetMap.getOrDefault(c, 0) + 1);
+        }
+
+        // Map to store frequency of characters in current window
+        Map<Character, Integer> windowMap = new HashMap<>();
+        
+        int left = 0, right = 0;
+        int required = targetMap.size(); // Number of unique characters in t
+        int formed = 0; // Unique characters in current window that meet target frequency
+        
+        int[] result = {-1, 0, 0}; // {length, leftIndex, rightIndex}
+
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            windowMap.put(c, windowMap.getOrDefault(c, 0) + 1);
+
+            // If the current character's frequency matches the target, increment 'formed'
+            if (targetMap.containsKey(c) && windowMap.get(c).equals(targetMap.get(c))) {
+                formed++;
+            }
+
+            // Try and contract the window till the point it ceases to be 'desirable'
+            while (left <= right && formed == required) {
+                c = s.charAt(left);
+
+                // Update result if this window is smaller than previous minimum
+                if (result[0] == -1 || (right - left + 1) < result[0]) {
+                    result[0] = right - left + 1;
+                    result[1] = left;
+                    result[2] = right;
+                }
+
+                // Remove the character at 'left' from window
+                windowMap.put(c, windowMap.get(c) - 1);
+                if (targetMap.containsKey(c) && windowMap.get(c) < targetMap.get(c)) {
+                    formed--;
+                }
+                left++;
+            }
+            right++;
+        }
+
+        return result[0] == -1 ? "" : s.substring(result[1], result[2] + 1);
+    }
+}
