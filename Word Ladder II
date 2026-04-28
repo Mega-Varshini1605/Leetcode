@@ -1,0 +1,73 @@
+import java.util.*;
+
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> res = new ArrayList<>();
+        Set<String> dict = new HashSet<>(wordList);
+        if (!dict.contains(endWord)) return res;
+
+        // distance map to store the shortest distance from beginWord
+        Map<String, Integer> distance = new HashMap<>();
+        // adjacency list to store the graph
+        Map<String, List<String>> adj = new HashMap<>();
+        
+        dict.add(beginWord);
+        bfs(beginWord, endWord, dict, distance, adj);
+        
+        if (distance.containsKey(endWord)) {
+            backtrack(beginWord, endWord, distance, adj, new ArrayList<>(Arrays.asList(beginWord)), res);
+        }
+        
+        return res;
+    }
+
+    private void bfs(String beginWord, String endWord, Set<String> dict, Map<String, Integer> distance, Map<String, List<String>> adj) {
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        distance.put(beginWord, 0);
+
+        while (!queue.isEmpty()) {
+            String curr = queue.poll();
+            int currDist = distance.get(curr);
+            
+            // Optimization: Stop if we find a path longer than the shortest path to endWord
+            if (distance.containsKey(endWord) && currDist >= distance.get(endWord)) break;
+
+            char[] chars = curr.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char old = chars[i];
+                for (char c = 'a'; c <= 'z'; c++) {
+                    chars[i] = c;
+                    String next = new String(chars);
+                    
+                    if (dict.contains(next)) {
+                        // If first time visiting or found another shortest path
+                        if (!distance.containsKey(next)) {
+                            distance.put(next, currDist + 1);
+                            adj.computeIfAbsent(curr, k -> new ArrayList<>()).add(next);
+                            queue.offer(next);
+                        } else if (distance.get(next) == currDist + 1) {
+                            adj.computeIfAbsent(curr, k -> new ArrayList<>()).add(next);
+                        }
+                    }
+                }
+                chars[i] = old;
+            }
+        }
+    }
+
+    private void backtrack(String curr, String endWord, Map<String, Integer> distance, Map<String, List<String>> adj, List<String> path, List<List<String>> res) {
+        if (curr.equals(endWord)) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+
+        if (!adj.containsKey(curr)) return;
+
+        for (String next : adj.get(curr)) {
+            path.add(next);
+            backtrack(next, endWord, distance, adj, path, res);
+            path.remove(path.size() - 1);
+        }
+    }
+}
