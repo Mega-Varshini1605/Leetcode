@@ -1,0 +1,39 @@
+import java.util.*;
+
+class Solution {
+    public List<String> addOperators(String num, int target) {
+        List<String> result = new ArrayList<>();
+        if (num == null || num.length() == 0) return result;
+        backtrack(result, "", num, target, 0, 0, 0);
+        return result;
+    }
+
+    private void backtrack(List<String> res, String path, String num, int target, int pos, long eval, long prevValue) {
+        if (pos == num.length()) {
+            if (eval == target) res.add(path);
+            return;
+        }
+
+        for (int i = pos; i < num.length(); i++) {
+            // Handle leading zeros: if "0" is the start, it can't be followed by other digits
+            if (i != pos && num.charAt(pos) == '0') break;
+
+            long cur = Long.parseLong(num.substring(pos, i + 1));
+
+            if (pos == 0) {
+                // First number, no operator needed
+                backtrack(res, path + cur, num, target, i + 1, cur, cur);
+            } else {
+                // Try Addition
+                backtrack(res, path + "+" + cur, num, target, i + 1, eval + cur, cur);
+                
+                // Try Subtraction
+                backtrack(res, path + "-" + cur, num, target, i + 1, eval - cur, -cur);
+                
+                // Try Multiplication
+                // Undo previous value from eval, multiply it with current, then add back
+                backtrack(res, path + "*" + cur, num, target, i + 1, eval - prevValue + prevValue * cur, prevValue * cur);
+            }
+        }
+    }
+}
