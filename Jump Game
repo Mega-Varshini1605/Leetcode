@@ -1,0 +1,17 @@
+class Solution {
+    public boolean canJump(int[] nums) {
+        int reachable = 0;
+        for (int i = 0; i < nums.length; i++) {
+            // If the current index is greater than the furthest reachable point,
+            // it means we've hit a gap we cannot cross.
+            if (i > reachable) return false;
+            
+            // Update the furthest reachable index
+            reachable = Math.max(reachable, i + nums[i]);
+            
+            // Optimization: If we can already reach the last index, return true
+            if (reachable >= nums.length - 1) return true;
+        }
+        return true;
+    }
+}
