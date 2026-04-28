@@ -1,0 +1,59 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> result = new ArrayList<>();
+        int i = 0;
+
+        while (i < words.length) {
+            int lineLength = words[i].length();
+            int last = i + 1;
+
+            // Step 1: Determine how many words fit in the current line
+            while (last < words.length) {
+                if (lineLength + 1 + words[last].length() > maxWidth) break;
+                lineLength += 1 + words[last].length();
+                last++;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            int numberOfWords = last - i;
+            int numberOfSpaces = maxWidth - lineLength;
+
+            // Step 2: Format the line
+            // If it's the last line or the line has only one word: Left Justify
+            if (last == words.length || numberOfWords == 1) {
+                for (int k = i; k < last; k++) {
+                    builder.append(words[k]);
+                    if (k < last - 1) builder.append(" ");
+                }
+                // Pad the remaining width with spaces
+                while (builder.length() < maxWidth) {
+                    builder.append(" ");
+                }
+            } else {
+                // Fully Justify: Distribute spaces evenly
+                int spacesBetweenWords = (last - i - 1);
+                int totalSpaces = numberOfSpaces + spacesBetweenWords;
+                int spaceWidth = totalSpaces / spacesBetweenWords;
+                int extraSpaces = totalSpaces % spacesBetweenWords;
+
+                for (int k = i; k < last - 1; k++) {
+                    builder.append(words[k]);
+                    // Add standard spaces + 1 extra if within the remainder count
+                    int spacesToApply = spaceWidth + (k - i < extraSpaces ? 1 : 0);
+                    for (int s = 0; s < spacesToApply; s++) {
+                        builder.append(" ");
+                    }
+                }
+                builder.append(words[last - 1]); // Add the last word of the line
+            }
+
+            result.add(builder.toString());
+            i = last; // Move to the next set of words
+        }
+
+        return result;
+    }
+}
