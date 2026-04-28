@@ -1,0 +1,40 @@
+class Solution {
+    public String shortestPalindrome(String s) {
+        if (s == null || s.length() <= 1) return s;
+
+        // Create a combined string: s + "#" + reverse(s)
+        // The "#" separator ensures the prefix doesn't overlap with the reverse
+        String rev = new StringBuilder(s).reverse().toString();
+        String combined = s + "#" + rev;
+
+        // Compute the KMP lookup table (Next array) for the combined string
+        int[] next = computeNext(combined);
+
+        // The last value in the next array tells us the length of the 
+        // longest prefix of s that is also a suffix of rev(s).
+        // This is exactly our longest palindromic prefix!
+        int longestPalPrefixLen = next[combined.length() - 1];
+
+        // Take the part of s that isn't part of the palindromic prefix,
+        // reverse it, and add it to the front.
+        String suffixToReverse = s.substring(longestPalPrefixLen);
+        return new StringBuilder(suffixToReverse).reverse().toString() + s;
+    }
+
+    private int[] computeNext(String pattern) {
+        int n = pattern.length();
+        int[] next = new int[n];
+        int j = 0; // length of previous longest proper prefix suffix
+
+        for (int i = 1; i < n; i++) {
+            while (j > 0 && pattern.charAt(i) != pattern.charAt(j)) {
+                j = next[j - 1];
+            }
+            if (pattern.charAt(i) == pattern.charAt(j)) {
+                j++;
+            }
+            next[i] = j;
+        }
+        return next;
+    }
+}
