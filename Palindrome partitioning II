@@ -1,0 +1,32 @@
+class Solution {
+    public int minCut(String s) {
+        int n = s.length();
+        if (n <= 1) return 0;
+
+        // isPal[i][j] is true if s[i...j] is a palindrome
+        boolean[][] isPal = new boolean[n][n];
+        // cuts[i] is the min cuts for the prefix s[0...i]
+        int[] cuts = new int[n];
+
+        for (int j = 0; j < n; j++) {
+            int min = j; // Maximum possible cuts (each char is a cut)
+            for (int i = 0; i <= j; i++) {
+                // If s[i] == s[j] and (gap is small OR inner substring is palindrome)
+                if (s.charAt(i) == s.charAt(j) && (j - i <= 2 || isPal[i + 1][j - 1])) {
+                    isPal[i][j] = true;
+                    
+                    // If s[0...j] is a palindrome, no cuts needed
+                    if (i == 0) {
+                        min = 0;
+                    } else {
+                        // Otherwise, update min using the result from previous prefix
+                        min = Math.min(min, cuts[i - 1] + 1);
+                    }
+                }
+            }
+            cuts[j] = min;
+        }
+
+        return cuts[n - 1];
+    }
+}
