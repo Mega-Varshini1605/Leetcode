@@ -1,0 +1,39 @@
+import java.util.*;
+
+class Solution {
+    public int maxPoints(int[][] points) {
+        int n = points.length;
+        if (n <= 2) return n;
+        
+        int maxPoints = 1;
+        
+        for (int i = 0; i < n; i++) {
+            // Map to store: Slope -> Count of points with this slope from point i
+            Map<Double, Integer> map = new HashMap<>();
+            
+            for (int j = i + 1; j < n; j++) {
+                double slope = calculateSlope(points[i], points[j]);
+                map.put(slope, map.getOrDefault(slope, 0) + 1);
+            }
+            
+            // For point i, find the max points on a single slope line
+            for (int count : map.values()) {
+                maxPoints = Math.max(maxPoints, count + 1); // +1 to include point i itself
+            }
+        }
+        
+        return maxPoints;
+    }
+    
+    private double calculateSlope(int[] p1, int[] p2) {
+        int dx = p2[0] - p1[0];
+        int dy = p2[1] - p1[1];
+        
+        if (dx == 0) return Double.POSITIVE_INFINITY; // Vertical line
+        if (dy == 0) return 0.0; // Horizontal line
+        
+        // Use double for precision. Note: -0.0 and 0.0 are treated differently in some cases,
+        // but adding 0.0 helps normalize it.
+        return (double) dy / dx + 0.0;
+    }
+}
