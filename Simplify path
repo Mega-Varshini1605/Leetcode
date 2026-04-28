@@ -1,0 +1,35 @@
+import java.util.*;
+
+class Solution {
+    public String simplifyPath(String path) {
+        Stack<String> stack = new Stack<>();
+        // Slash-a vechu split panna empty strings and extra slashes handle aagum
+        String[] components = path.split("/");
+
+        for (String directory : components) {
+            // Case 1: Empty string illa "." irundha ignore pannidalam
+            if (directory.isEmpty() || directory.equals(".")) {
+                continue;
+            }
+            // Case 2: ".." vandha parent directory-ku ponom, so stack-la irundhu pop pannanum
+            else if (directory.equals("..")) {
+                if (!stack.isEmpty()) {
+                    stack.pop();
+                }
+            }
+            // Case 3: Vera edhavadhu name (like "home", "...") vandha stack-la add pannanum
+            else {
+                stack.push(directory);
+            }
+        }
+
+        // Stack-la irukkura names-a "/" vechu join pannanum
+        StringBuilder result = new StringBuilder();
+        for (String dir : stack) {
+            result.append("/").append(dir);
+        }
+
+        // Stack empty-ah irundha "/" mattum return pannanum
+        return result.length() == 0 ? "/" : result.toString();
+    }
+}
