@@ -1,0 +1,47 @@
+import java.util.*;
+
+class RandomizedCollection {
+    private List<Integer> nums;
+    private Map<Integer, Set<Integer>> locs;
+    private Random rand;
+
+    public RandomizedCollection() {
+        nums = new ArrayList<>();
+        locs = new HashMap<>();
+        rand = new Random();
+    }
+
+    public boolean insert(int val) {
+        boolean notPresent = !locs.containsKey(val) || locs.get(val).isEmpty();
+        locs.computeIfAbsent(val, k -> new LinkedHashSet<>()).add(nums.size());
+        nums.add(val);
+        return notPresent;
+    }
+
+    public boolean remove(int val) {
+        if (!locs.containsKey(val) || locs.get(val).isEmpty()) return false;
+
+        // 1. Get an index of the value to remove
+        int removeIdx = locs.get(val).iterator().next();
+        locs.get(val).remove(removeIdx);
+
+        // 2. Get the last element in the list
+        int lastVal = nums.get(nums.size() - 1);
+        int lastIdx = nums.size() - 1;
+
+        // 3. If the removed element is NOT the last element, swap it
+        if (removeIdx < lastIdx) {
+            nums.set(removeIdx, lastVal);
+            locs.get(lastVal).remove(lastIdx);
+            locs.get(lastVal).add(removeIdx);
+        }
+
+        // 4. Clean up the list
+        nums.remove(lastIdx);
+        return true;
+    }
+
+    public int getRandom() {
+        return nums.get(rand.nextInt(nums.size()));
+    }
+}
