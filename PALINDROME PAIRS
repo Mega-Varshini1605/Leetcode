@@ -1,0 +1,48 @@
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> palindromePairs(String[] words) {
+        List<List<Integer>> res = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < words.length; i++) {
+            map.put(words[i], i);
+        }
+
+        for (int i = 0; i < words.length; i++) {
+            String w = words[i];
+            int n = w.length();
+
+            for (int j = 0; j <= n; j++) {
+                String s1 = w.substring(0, j);
+                String s2 = w.substring(j);
+
+                // If prefix s1 is a palindrome, look for reverse(s2) to put at the front
+                if (isPalindrome(s1)) {
+                    String reverseS2 = new StringBuilder(s2).reverse().toString();
+                    if (map.containsKey(reverseS2) && map.get(reverseS2) != i) {
+                        res.add(Arrays.asList(map.get(reverseS2), i));
+                    }
+                }
+
+                // If suffix s2 is a palindrome, look for reverse(s1) to put at the back
+                // j < n prevents duplicate counting when s1 is the whole word (already covered by j=0)
+                if (isPalindrome(s2) && j < n) {
+                    String reverseS1 = new StringBuilder(s1).reverse().toString();
+                    if (map.containsKey(reverseS1) && map.get(reverseS1) != i) {
+                        res.add(Arrays.asList(i, map.get(reverseS1)));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    private boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left++) != s.charAt(right--)) return false;
+        }
+        return true;
+    }
+}
