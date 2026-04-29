@@ -1,0 +1,55 @@
+import java.util.*;
+
+class SummaryRanges {
+    // Key: start of interval, Value: end of interval
+    TreeMap<Integer, Integer> treeMap;
+
+    public SummaryRanges() {
+        treeMap = new TreeMap<>();
+    }
+    
+    public void addNum(int value) {
+        if (treeMap.containsKey(value)) return;
+
+        // Find the closest intervals around the new value
+        Integer lowKey = treeMap.lowerKey(value); // Interval starting before 'value'
+        Integer highKey = treeMap.higherKey(value); // Interval starting after 'value'
+
+        if (lowKey != null && treeMap.get(lowKey) >= value) {
+            // Value is already covered by an existing interval
+            return;
+        }
+
+        boolean leftConnect = (lowKey != null && treeMap.get(lowKey) == value - 1);
+        boolean rightConnect = (highKey != null && highKey == value + 1);
+
+        if (leftConnect && rightConnect) {
+            // Merge: [lowKey, value-1] + value + [value+1, highEnd]
+            int highEnd = treeMap.get(highKey);
+            treeMap.put(lowKey, highEnd);
+            treeMap.remove(highKey);
+        } else if (leftConnect) {
+            // Extend left: [lowKey, value-1] -> [lowKey, value]
+            treeMap.put(lowKey, value);
+        } else if (rightConnect) {
+            // Extend right: [value+1, highEnd] -> [value, highEnd]
+            int highEnd = treeMap.get(highKey);
+            treeMap.put(value, highEnd);
+            treeMap.remove(highKey);
+        } else {
+            // New isolated interval: [value, value]
+            treeMap.put(value, value);
+        }
+    }
+    
+    public int[][] getIntervals() {
+        int[][] res = new int[treeMap.size()][2];
+        int i = 0;
+        for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
+            res[i][0] = entry.getKey();
+            res[i][1] = entry.getValue();
+            i++;
+        }
+        return res;
+    }
+}
