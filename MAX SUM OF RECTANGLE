@@ -1,0 +1,48 @@
+import java.util.*;
+
+class Solution {
+    public int maxSumSubmatrix(int[][] matrix, int k) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int maxResult = Integer.MIN_VALUE;
+
+        // Follow-up: Optimization for cases where rows >> cols
+        // We iterate based on the smaller dimension
+        int outer = Math.min(rows, cols);
+        int inner = Math.max(rows, cols);
+        boolean isRowSmaller = rows < cols;
+
+        for (int i = 0; i < outer; i++) {
+            int[] rowSums = new int[inner];
+            for (int j = i; j < outer; j++) {
+                // Compress 2D into 1D array
+                for (int r = 0; r < inner; r++) {
+                    rowSums[r] += isRowSmaller ? matrix[j][r] : matrix[r][j];
+                }
+                
+                // Find the max subarray sum <= k using TreeSet
+                maxResult = Math.max(maxResult, findMax(rowSums, k));
+                if (maxResult == k) return k; // Optimization: early exit
+            }
+        }
+        return maxResult;
+    }
+
+    private int findMax(int[] nums, int k) {
+        TreeSet<Integer> set = new TreeSet<>();
+        set.add(0); // Base case for prefix sum
+        int prefixSum = 0;
+        int max = Integer.MIN_VALUE;
+
+        for (int x : nums) {
+            prefixSum += x;
+            // Look for smallest S_prev >= prefixSum - k
+            Integer target = set.ceiling(prefixSum - k);
+            if (target != null) {
+                max = Math.max(max, prefixSum - target);
+            }
+            set.add(prefixSum);
+        }
+        return max;
+    }
+}
