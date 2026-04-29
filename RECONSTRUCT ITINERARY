@@ -1,0 +1,35 @@
+import java.util.*;
+
+class Solution {
+    // Map to store the graph: Departure -> PriorityQueue of Arrivals
+    // PriorityQueue ensures we always pick the lexicographically smallest destination
+    Map<String, PriorityQueue<String>> graph = new HashMap<>();
+    LinkedList<String> itinerary = new LinkedList<>();
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        // 1. Build the graph
+        for (List<String> ticket : tickets) {
+            graph.computeIfAbsent(ticket.get(0), k -> new PriorityQueue<>()).add(ticket.get(1));
+        }
+
+        // 2. Start DFS from "JFK"
+        dfs("JFK");
+
+        return itinerary;
+    }
+
+    private void dfs(String airport) {
+        PriorityQueue<String> destinations = graph.get(airport);
+        
+        // 3. Visit destinations in lexical order
+        while (destinations != null && !destinations.isEmpty()) {
+            // poll() removes the ticket so it's used only once
+            dfs(destinations.poll());
+        }
+        
+        // 4. Post-order: add to the beginning of the list
+        // This ensures the end of the trip is added last in the recursion 
+        // but appears last in the final result.
+        itinerary.addFirst(airport);
+    }
+}
