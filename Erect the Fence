@@ -1,0 +1,35 @@
+import java.util.*;
+
+class Solution {
+    public int[][] outerTrees(int[][] trees) {
+        if (trees.length <= 1) return trees;
+        
+        Arrays.sort(trees, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        
+        List<int[]> hull = new ArrayList<>();
+        
+        // Lower hull
+        for (int[] t : trees) {
+            while (hull.size() >= 2 && crossProduct(hull.get(hull.size() - 2), hull.get(hull.size() - 1), t) < 0) {
+                hull.remove(hull.size() - 1);
+            }
+            hull.add(t);
+        }
+        
+        // Upper hull
+        for (int i = trees.length - 2; i >= 0; i--) {
+            int[] t = trees[i];
+            while (hull.size() >= 2 && crossProduct(hull.get(hull.size() - 2), hull.get(hull.size() - 1), t) < 0) {
+                hull.remove(hull.size() - 1);
+            }
+            hull.add(t);
+        }
+        
+        Set<int[]> unique = new HashSet<>(hull);
+        return unique.toArray(new int[unique.size()][]);
+    }
+    
+    private int crossProduct(int[] a, int[] b, int[] c) {
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+    }
+}
