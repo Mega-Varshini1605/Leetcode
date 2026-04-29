@@ -1,0 +1,21 @@
+class Solution {
+    public int findMinMoves(int[] machines) {
+        int totalDresses = 0;
+        for (int m : machines) totalDresses += m;
+        
+        int n = machines.length;
+        if (totalDresses % n != 0) return -1;
+        
+        int target = totalDresses / n;
+        int maxMoves = 0;
+        int currentBalance = 0;
+        
+        for (int m : machines) {
+            int diff = m - target;
+            currentBalance += diff;
+            maxMoves = Math.max(maxMoves, Math.max(Math.abs(currentBalance), diff));
+        }
+        
+        return maxMoves;
+    }
+}
